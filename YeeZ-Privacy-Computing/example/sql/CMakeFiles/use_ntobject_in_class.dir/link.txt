@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/use_ntobject_in_class.dir/use_ntobject_in_class.cpp.o  -o ../../../bin/use_ntobject_in_class   -L/usr/local/lib  -L/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib 
