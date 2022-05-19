@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/table.dir/use_table.cpp.o  -o ../../../bin/table   -L/usr/local/lib  -L/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib  -Wl,-rpath,/usr/local/lib:/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib -lmysqlcppconn 

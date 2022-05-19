@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/use_ntarray.dir/use_ntarray.cpp.o  -o ../../../bin/use_ntarray   -L/usr/local/lib  -L/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib 

@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/use_ntobject_in_namespace.dir/use_ntobject_in_namespace.cpp.o  -o ../../../bin/use_ntobject_in_namespace   -L/usr/local/lib  -L/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib 

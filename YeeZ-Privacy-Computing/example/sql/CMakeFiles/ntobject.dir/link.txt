@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/ntobject.dir/use_ntobject.cpp.o  -o ../../../bin/ntobject   -L/usr/local/lib  -L/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib  -Wl,-rpath,/usr/local/lib:/home/yu/YeeZ-Privacy-Computing/vendor/fflib/lib -lmysqlcppconn -lff_net 
