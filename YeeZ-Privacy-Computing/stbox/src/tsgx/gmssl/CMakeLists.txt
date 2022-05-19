@@ -34,7 +34,7 @@ add_library(
 	sha256.c
 	sha512.c
 	sm2_alg.c
-	ssm_key.c
+	sm2_key.c
 	sm2_lib.c
 	sm3.c
 	sm3_hmac.c
