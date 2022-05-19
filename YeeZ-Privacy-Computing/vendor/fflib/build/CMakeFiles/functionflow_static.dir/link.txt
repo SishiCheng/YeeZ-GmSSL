@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libff_functionflow.a  CMakeFiles/functionflow_static.dir/src/functionflow/common.cpp.o CMakeFiles/functionflow_static.dir/src/functionflow/rtcmn.cpp.o CMakeFiles/functionflow_static.dir/src/functionflow/runtime.cpp.o CMakeFiles/functionflow_static.dir/src/functionflow/wait.cpp.o
+/usr/bin/ranlib ../lib/libff_functionflow.a

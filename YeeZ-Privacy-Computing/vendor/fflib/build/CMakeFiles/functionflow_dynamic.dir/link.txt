@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libff_functionflow.so -o ../lib/libff_functionflow.so CMakeFiles/functionflow_dynamic.dir/src/functionflow/common.cpp.o CMakeFiles/functionflow_dynamic.dir/src/functionflow/rtcmn.cpp.o CMakeFiles/functionflow_dynamic.dir/src/functionflow/runtime.cpp.o CMakeFiles/functionflow_dynamic.dir/src/functionflow/wait.cpp.o   -L/usr/local/lib 
