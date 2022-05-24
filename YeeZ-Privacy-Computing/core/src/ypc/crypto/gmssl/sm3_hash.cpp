@@ -1,5 +1,5 @@
 ﻿#include "corecommon/crypto/gmssl/sm3_hash.h"
-#include <gmsssl/sm3.h>
+#include <gmssl/sm3.h>
 #include "common/byte.h"
 #include "stbox/stx_status.h"
 extern "C" {
