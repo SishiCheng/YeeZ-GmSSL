@@ -1,6 +1,5 @@
 #include "corecommon/crypto/gmssl/sm2_ecc.h"
 #include <gmssl/sm2.h>
-#include <gmssl/rand.h>
 #include "common/byte.h"
 #include "stbox/stx_status.h"
 using namespace std;
