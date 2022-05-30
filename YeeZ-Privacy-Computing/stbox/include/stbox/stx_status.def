@@ -54,4 +54,4 @@ ATT_STATUS(sm2_verify_error, 0x53)
 ATT_STATUS(sm2_shared_key_error, 0x54)
 ATT_STATUS(sm2_point_convert_error, 0x55)
 ATT_STATUS(sm2_empty_public_error, 0x56)
-
+ATT_STATUS(sm2_get_false_sign, 0x57)
