@@ -70,12 +70,8 @@ uint32_t sm2_ecc::verify_signature(const uint8_t *data, uint32_t data_size,
     sm3_hash::msg_hash(data, data_size, hash, 32);
     SM2_KEY key;
     SM2_POINT sm2_public_key;
-    int convert_res = sm2_point_from_octets(&sm2_public_key, public_key, 64);
-    if (convert_res == -1)
-    {
-        return stbox::stx_status::sm2_point_convert_error;
-    }
-
+    memcpy(&sm2_public_key.x, public_key, 32);
+    memcpy(&sm2_public_key.y, public_key + 32, 32);
     int res = sm2_key_set_public_key(&key, &sm2_public_key);
     if (res == -1)
     {
@@ -106,11 +102,8 @@ uint32_t ecdh_shared_key(const uint8_t *skey, uint32_t skey_size,
     }
 
     SM2_POINT peer_public, out;
-    int convert_res = sm2_point_from_octets(&peer_public, public_key, 64);
-    if (convert_res == -1)
-    {
-        return stbox::stx_status::sm2_point_convert_error;
-    }
+    memcpy(&peer_public.x, public_key, 32);
+    memcpy(&peer_public.y, public_key + 32, 32);
 
     int ecdh_res = sm2_ecdh(&key, &peer_public, &out);
     if (ecdh_res == -1)
