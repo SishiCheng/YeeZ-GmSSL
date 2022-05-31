@@ -3,7 +3,7 @@ find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 link_directories(${OPENSSL_LIB})
 
-set(gmssl_src sm3_hash.cpp)
+set(gmssl_src sm3_hash.cpp sm4_aes.cpp)
 
 add_library(ypc_gmssl_u SHARED ${gmssl_src})
 #add_trusted_library(ypc_stdeth_t
