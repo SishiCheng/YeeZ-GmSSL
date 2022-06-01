@@ -67,7 +67,7 @@ namespace crypto{
 
   if (cipher_size != data_size + 16) {
     LOG(ERROR)
-        << "cipher size should equal to data_size + 12";
+        << "cipher size should equal to data_size + 16";
     return stbox::stx_status::aes_invalid_data_size;
   }
 
