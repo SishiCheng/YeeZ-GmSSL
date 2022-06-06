@@ -16,7 +16,7 @@ static char aad_mac_text[AAD_MAC_TEXT_LEN] = "tech.yeez.key.manager";
 namespace ypc{
 namespace crypto{
 
-  uint32_t sm4_aes::get_encrypt_message_size_with_prefix(uint32_t data_size){ 
+  uint32_t sm4_aes::get_cipher_size(uint32_t data_size){ 
     return data_size + INITIALIZATION_VECTOR_SIZE; 
   }
 
@@ -56,7 +56,7 @@ namespace crypto{
     return se_ret; 
   }
 
-  uint32_t sm4_aes::get_decrypt_message_size_with_prefix(uint32_t cipher_size){ return cipher_size - INITIALIZATION_VECTOR_SIZE; }
+  uint32_t sm4_aes::get_data_size(uint32_t cipher_size){ return cipher_size - INITIALIZATION_VECTOR_SIZE; }
   uint32_t sm4_aes::decrypt_with_prefix(const uint8_t *key, uint32_t key_size,
                                     const uint8_t *cipher, uint32_t cipher_size,
                                     uint32_t prefix, uint8_t *data,
