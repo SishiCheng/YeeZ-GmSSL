@@ -79,7 +79,7 @@ namespace crypto{
 
   const uint8_t *p_iv_text = cipher + data_size;
   SM4_KEY sm4_key;
-  sm4_set_encrypt_key(&sm4_key, key);
+  sm4_set_decrypt_key(&sm4_key, key);
   auto se_ret = sm4_gcm_decrypt(&sm4_key, p_iv_text, INITIALIZATION_VECTOR_SIZE, mac_text, AAD_MAC_TEXT_LEN, cipher, cipher_size, in_mac, 16, data);
   return se_ret;
   }
