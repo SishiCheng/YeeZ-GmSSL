@@ -43,8 +43,6 @@ uint32_t sm2_ecc::generate_pkey_from_skey(const uint8_t *skey,
 uint32_t sm2_ecc::sign_message(const uint8_t *skey, uint32_t skey_size,
                              const uint8_t *data, uint32_t data_size,
                              uint8_t *sig, uint32_t sig_size){
-    uint8_t hash[32];
-    sm3_hash::msg_hash(data, data_size, hash, 32);
     SM2_KEY key;
     int res = sm2_key_set_private_key(&key, skey);
     if (res == -1)
@@ -53,7 +51,7 @@ uint32_t sm2_ecc::sign_message(const uint8_t *skey, uint32_t skey_size,
     }
 
     size_t siglen;
-    int sign_res = sm2_sign(&key, hash, sig, &siglen);
+    int sign_res = sm2_sign(&key, data, sig, &siglen);
     if (sign_res == -1)
     {
         return stbox::stx_status::sm2_sign_error;
@@ -66,8 +64,6 @@ uint32_t sm2_ecc::verify_signature(const uint8_t *data, uint32_t data_size,
                           const uint8_t *sig, uint32_t sig_size,
                           const uint8_t *public_key,
                           uint32_t pkey_size){
-    uint8_t hash[32];
-    sm3_hash::msg_hash(data, data_size, hash, 32);
     SM2_KEY key;
     SM2_POINT sm2_public_key;
     memcpy(&sm2_public_key.x, public_key, 32);
@@ -78,7 +74,7 @@ uint32_t sm2_ecc::verify_signature(const uint8_t *data, uint32_t data_size,
         return stbox::stx_status::sm2_empty_public_error;
     }
 
-    int verify_res = sm2_verify(&key, hash, sig, (size_t)sig_size);
+    int verify_res = sm2_verify(&key, data, sig, (size_t)sig_size);
     if (verify_res == -1)
     {
         return stbox::stx_status::sm2_verify_error;
