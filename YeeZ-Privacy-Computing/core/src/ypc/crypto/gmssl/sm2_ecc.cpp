@@ -40,6 +40,8 @@ uint32_t sm2_ecc::generate_pkey_from_skey(const uint8_t *skey,
     return stbox::stx_status::success;
 }
 
+static uint32_t get_signature_size(){ }
+
 uint32_t sm2_ecc::sign_message(const uint8_t *skey, uint32_t skey_size,
                              const uint8_t *data, uint32_t data_size,
                              uint8_t *sig, uint32_t sig_size){
@@ -107,8 +109,11 @@ uint32_t ecdh_shared_key(const uint8_t *skey, uint32_t skey_size,
         return stbox::stx_status::sm2_shared_key_error;
     }
 
-    memcpy(shared_key, out.x, 32);
-    memcpy(shared_key + 32, out.y, 32);
+    uint8_t tmp_shared_key, hash;
+    memcpy(&tmp_shared_key, out.x, 32);
+    memcpy(&tmp_shared_key + 32, out.y, 32);
+    sm3_hash::msg_hash(&tmp_shared_key, 64, &hash, 32);
+    memcpy(shared_key, &tmp_shared_key, 16);
     return stbox::stx_status::success;
 }
 
