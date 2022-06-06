@@ -1,5 +1,6 @@
-﻿#include "corecommon/crypto/gmssl/sm3_hash.h"
+#include "corecommon/crypto/gmssl/sm3_hash.h"
 #include <gmssl/sm3.h>
+#include <gmssl/sha2.h>
 #include "common/byte.h"
 #include "stbox/stx_status.h"
 extern "C" {
@@ -7,6 +8,11 @@ extern "C" {
 }
 namespace ypc {
 namespace crypto {
+
+uint32_t sha3_256(const uint8_t *msg, uint32_t msg_size, uint8_t *hash){
+	sha256_digest(msg, msg_size, hash);
+	return stbox::stx_status::success;
+}
 
 uint32_t sm3_hash::get_msg_hash_size() { return 32; }
 
@@ -22,3 +28,4 @@ uint32_t sm3_hash::msg_hash(const uint8_t *raw_msg, uint32_t msg_size,
 }
 } // namespace crypto
 } // namespace ypc
+
