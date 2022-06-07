@@ -1,6 +1,6 @@
 #include "corecommon/crypto/gmssl/sm2_ecc.h"
 #include "corecommon/crypto/gmssl/sm3_hash.h"
-#include <cstdint>
+#include <openssl/rand.h>
 #include <gmssl/sm2.h>
 #include "common/byte.h"
 #include "stbox/stx_status.h"
@@ -124,10 +124,10 @@ uint32_t sm2_ecc::ecdh_shared_key(const uint8_t *skey, uint32_t skey_size,
     }
 
     uint8_t tmp_shared_key[64], hash[32];
-    memcpy(&tmp_shared_key, out.x, 32);
-    memcpy(&tmp_shared_key + 32, out.y, 32);
-    sm3_hash::msg_hash(&tmp_shared_key, 64, &hash, 32);
-    memcpy(shared_key, &hash, 16);
+    memcpy(tmp_shared_key, out.x, 32);
+    memcpy(tmp_shared_key + 32, out.y, 32);
+    sm3_hash::msg_hash(tmp_shared_key, 64, hash, 32);
+    memcpy(shared_key, hash, 16);
     return stbox::stx_status::success;
 }
 
