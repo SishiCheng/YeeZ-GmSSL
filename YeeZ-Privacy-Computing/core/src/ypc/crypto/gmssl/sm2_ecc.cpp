@@ -1,6 +1,7 @@
 #include "corecommon/crypto/gmssl/sm2_ecc.h"
 #include "corecommon/crypto/gmssl/sm3_hash.h"
 #include <openssl/rand.h>
+#include <glog/logging.h>
 #include <gmssl/sm2.h>
 #include "common/byte.h"
 #include "stbox/stx_status.h"
