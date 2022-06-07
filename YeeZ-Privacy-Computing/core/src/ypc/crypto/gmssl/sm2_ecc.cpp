@@ -40,7 +40,7 @@ uint32_t sm2_ecc::generate_pkey_from_skey(const uint8_t *skey,
     return stbox::stx_status::success;
 }
 
-static uint32_t get_signature_size(){ }
+uint32_t sm2_ecc::get_signature_size(){ return sizeof(SM2_SIGNATURE) * sizeof(uint8_t); }
 
 uint32_t sm2_ecc::sign_message(const uint8_t *skey, uint32_t skey_size,
                              const uint8_t *data, uint32_t data_size,
