@@ -5,6 +5,7 @@ link_directories(${OPENSSL_LIB})
 
 set(gmssl_src sm3_hash.cpp sm4_aes.cpp)
 
+include_directories(${PROJECT_SOURCE_DIR}/stbox/include/stbox/tsgx)
 add_library(ypc_gmssl_u SHARED ${gmssl_src})
 #add_trusted_library(ypc_stdeth_t
   #ypc_stdeth_t

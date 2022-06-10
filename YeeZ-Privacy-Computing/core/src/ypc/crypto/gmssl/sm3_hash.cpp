@@ -9,9 +9,10 @@ extern "C" {
 namespace ypc {
 namespace crypto {
 
-uint32_t sha3_256(const uint8_t *msg, uint32_t msg_size, uint8_t *hash){
-	sha256_digest(msg, msg_size, hash);
-	return stbox::stx_status::success;
+uint32_t sm3_hash::sha3_256(const uint8_t *msg, uint32_t msg_size,
+                            uint8_t *hash) {
+  sha256_digest(msg, msg_size, hash);
+  return stbox::stx_status::success;
 }
 
 uint32_t sm3_hash::get_msg_hash_size() { return 32; }

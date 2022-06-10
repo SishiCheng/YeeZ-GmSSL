@@ -1,5 +1,11 @@
 add_subdirectory(enclave)
 
+add_executable(gtest_gmssl
+  main.cpp
+  gtest_gmssl.cpp
+  )
+target_link_libraries(gtest_gmssl gtest ypc_gmssl_u stbox_common_u ypc_core)
+
 set(src main.cpp gtest_crypto.cpp gmssl_test.cpp)
 set(edl_path ${PROJECT_SOURCE_DIR}/core/edl/:${PROJECT_SOURCE_DIR}/stbox/src)
 
