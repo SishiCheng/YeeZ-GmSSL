@@ -11,10 +11,6 @@ extern "C" {
 namespace ypc {
 namespace crypto {
 
-uint32_t sm2_ecc::get_private_key_size() { return 32; }
-
-uint32_t sm2_ecc::get_public_key_size() { return 64; }
-
 uint32_t sm2_ecc::gen_private_key(uint32_t skey_size, uint8_t *skey) {
     SM2_KEY tmp; 
     int res = sm2_key_generate(&tmp);
