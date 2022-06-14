@@ -136,22 +136,39 @@ TEST(test_sm4_aes, get_cipher_size) {
 }
 
 TEST(test_sm4_aes, encrypt_with_prefix) {
-  ypc::bytes pkey("k3Men*p/2.3j4abB");
-  ypc::bytes data("this|is|a|test|message");
+  ypc::bytes key("k3Men*p/2.3j4abB");
+  std::string data = "this|is|a|test|message";
+  uint32_t data_size = sizeof(data);
+  uint32_t prefix = 0x1;
+  uint32_t cipher_size = sizeof(data) + 12;
+  uint8_t cipher[cipher_size]; 
+  uint8_t out_mac[16];
 
-  ypc::hex_bytes skey_hex(
-      "3908a1b53ef489f2e8379298256112c4146475e86ace325c0a4be72b1d7a5043");
-  ypc::bytes skey = skey_hex.as<ypc::bytes>();
-  ypc::bytes pkey =
-    ypc::hex_bytes(
-        "362a609ab5a6eecafdb2289890bd7261871c04fb5d7323d4fc750f6444b067a12a96"
-        "e"
-        "fbe24c62572156caa514657d4a535101d2147337f41f51fcdfcf8f43a53")
-        .as<ypc::bytes>();
-  uint8_t shared_key[64];
-
-  uint32_t ret = ypc::crypto::sm2_ecc::ecdh_shared_key((const uint8_t *)&skey[0], 32,
-                                                (const uint8_t *)&pkey[0], 64,
-                                                (uint8_t *)&shared_key[0], 64);
+  uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix((const uint8_t *)&key[0], 16,
+                                                (const uint8_t *)&data[0], data_size, prefix,
+                                                (uint8_t *)&cipher[0], cipher_size, &out_mac[0]);
   EXPECT_EQ(ret, 0);
 }
+
+TEST(test_sm4_aes, get_data_size) {
+  uint32_t cipher_size = 0x25;
+  EXPECT_EQ(ypc::crypto::sm4_aes::get_data_size(cipher_size), cipher_size - 12);
+}
+
+TEST(test_sm4_aes, decrypt_with_prefix) {
+  ypc::bytes key("k3Men*p/2.3j4abB");
+  std::string cipher = "this|is|a|test|messageihugyufhuidr";
+  uint32_t cipher_size = sizeof(cipher);
+  uint32_t prefix = 0x1;
+  uint8_t data[cipher_size - 12];
+  uint8_t in_mac[16];
+
+  uint32_t ret = ypc::crypto::sm4_aes::decrypt_with_prefix((const uint8_t *)&key[0], 16,
+                                                (const uint8_t *)&cipher[0], cipher_size, prefix,
+                                                (uint8_t *)&data[0], cipher_size - 12, &in_mac[0]);
+  EXPECT_EQ(ret, 0);
+}
+
+
+
+
