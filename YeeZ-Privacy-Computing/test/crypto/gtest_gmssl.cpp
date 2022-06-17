@@ -4,6 +4,7 @@
 #include "ypc/byte.h"
 #include <gtest/gtest.h>
 
+
 TEST(test_sm3_hash, sha3_256) {
   std::string msg = "hello";
   uint8_t hash[32];
@@ -30,7 +31,7 @@ TEST(test_sm3_hash, msg_hash) {
   EXPECT_EQ(ret, 0);
   ypc::bytes expect_hash =
       ypc::hex_bytes(
-          "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
+          "becbbfaae6548b8bf0cfcad5a27183cd1be6093b1cceccc303d9c61d0a645268")
           .as<ypc::bytes>();
   EXPECT_TRUE(memcmp(hash, expect_hash.data(), 32) == 0);
 }
@@ -48,17 +49,11 @@ TEST(test_sm2_ecc, gen_private_key) {
   uint32_t ret = ypc::crypto::sm2_ecc::gen_private_key(32,
                                                  (uint8_t *)&skey[0]);
   EXPECT_EQ(ret, 0);
-
-  ypc::bytes expect_hex =
-    ypc::hex_bytes(
-        "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
-        .as<ypc::bytes>();
-  EXPECT_TRUE(memcmp(skey, expect_hex.data(), 32) == 0);
 }
 
 TEST(test_sm2_ecc, generate_pkey_from_skey) {
   ypc::hex_bytes skey_hex(
-      "3908a1b53ef489f2e8379298256112c4146475e86ace325c0a4be72b1d7a5043");
+      "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   uint8_t pkey[64];
   uint32_t ret = ypc::crypto::sm2_ecc::generate_pkey_from_skey((const uint8_t *)&skey[0], 32,
@@ -66,8 +61,8 @@ TEST(test_sm2_ecc, generate_pkey_from_skey) {
   EXPECT_EQ(ret, 0);
 
   ypc::hex_bytes expect_hex(
-      "5d7ee992f48ffcdb077c2cb57605b602bd4029faed3e91189c7fb9fccc72771e4"
-      "5b7aa166766e2ad032d0a195372f5e2d20db792901d559ab0d2bfae10ecea97");
+      "74ce7141e217c7c1d29fabc2459e408311aad0bc7417c5c159860c7ac64d9d36c"
+      "900cfcb6ae534f60f9f621b29219b16d590d64888784229f7fbe5a4cad5477c");
   EXPECT_TRUE(memcmp(pkey, expect_hex.data(), 64) == 0);
 }
 
@@ -75,51 +70,36 @@ TEST(test_sm2_ecc, get_signature_size) {
   EXPECT_EQ(ypc::crypto::sm2_ecc::get_signature_size(), 64);
 }
 
-TEST(test_sm2_ecc, sign_message) {
+TEST(test_sm2_ecc, sign) {
   ypc::hex_bytes skey_hex(
-      "3908a1b53ef489f2e8379298256112c4146475e86ace325c0a4be72b1d7a5043");
+      "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   std::string data = "hello";
   uint32_t data_size = sizeof(data);
   uint8_t sig[64];
-  uint32_t ret = ypc::crypto::sm2_ecc::sign_message((const uint8_t *)&skey[0], 32,
-                                                  (const uint8_t *)&data[0], data_size,
-                                                 (uint8_t *)&sig[0], 64);
-  EXPECT_EQ(ret, 0);
-}
-
-TEST(test_sm2_ecc, verify_signature) {
-  ypc::hex_bytes skey_hex(
-      "3908a1b53ef489f2e8379298256112c4146475e86ace325c0a4be72b1d7a5043");
-  ypc::bytes skey = skey_hex.as<ypc::bytes>();
-  std::string data = "hello";
-  uint32_t data_size = sizeof(data);
-  uint8_t sig[64];
+  std::cout << "start sign" << std::endl;
   uint32_t sign_ret = ypc::crypto::sm2_ecc::sign_message((const uint8_t *)&skey[0], 32,
                                                   (const uint8_t *)&data[0], data_size,
                                                  (uint8_t *)&sig[0], 64);
-  
-  ypc::bytes pkey =
-    ypc::hex_bytes(
-        "362a609ab5a6eecafdb2289890bd7261871c04fb5d7323d4fc750f6444b067a12a96"
-        "e"
-        "fbe24c62572156caa514657d4a535101d2147337f41f51fcdfcf8f43a53")
-        .as<ypc::bytes>();
+  std::cout << "end sign" << std::endl;
+
+  uint8_t pkey[64];
   uint32_t ret = ypc::crypto::sm2_ecc::verify_signature((const uint8_t *)&data[0], data_size,
                                                 (const uint8_t *)&sig[0], 64,
                                                 (uint8_t *)&pkey[0], 64);
   EXPECT_EQ(ret, 0);
+
 }
+
 
 TEST(test_sm2_ecc, ecdh_shared_key) {
   ypc::hex_bytes skey_hex(
-      "3908a1b53ef489f2e8379298256112c4146475e86ace325c0a4be72b1d7a5043");
+      "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   ypc::bytes pkey =
     ypc::hex_bytes(
-        "362a609ab5a6eecafdb2289890bd7261871c04fb5d7323d4fc750f6444b067a12a96"
-        "e"
-        "fbe24c62572156caa514657d4a535101d2147337f41f51fcdfcf8f43a53")
+      "74ce7141e217c7c1d29fabc2459e408311aad0bc7417c5c159860c7ac64d9d36c"
+      "900cfcb6ae534f60f9f621b29219b16d590d64888784229f7fbe5a4cad5477c")
         .as<ypc::bytes>();
   uint8_t shared_key[64];
 
@@ -168,7 +148,3 @@ TEST(test_sm4_aes, decrypt_with_prefix) {
                                                 (uint8_t *)&data[0], cipher_size - 12, &in_mac[0]);
   EXPECT_EQ(ret, 0);
 }
-
-
-
-
