@@ -49,11 +49,11 @@ namespace crypto{
 
     SM4_KEY sm4_key;
     sm4_set_encrypt_key(&sm4_key, key);
-    auto se_ret = sm4_gcm_encrypt(&sm4_key, p_iv_text, INITIALIZATION_VECTOR_SIZE, mac_text, AAD_MAC_TEXT_LEN, data, data_size, cipher, 16, out_mac);
+    sm4_gcm_encrypt(&sm4_key, p_iv_text, INITIALIZATION_VECTOR_SIZE, mac_text, AAD_MAC_TEXT_LEN, data, data_size, cipher, 16, out_mac);
     uint8_t hash[32];
     sm3_hash::msg_hash(out_mac, 16, hash, 32);
     memcpy(out_mac, hash, 16);
-    return se_ret; 
+    return stbox::stx_status::success;
   }
 
   uint32_t sm4_aes::get_data_size(uint32_t cipher_size){ return cipher_size - INITIALIZATION_VECTOR_SIZE; }
@@ -81,7 +81,7 @@ namespace crypto{
   SM4_KEY sm4_key;
   sm4_set_decrypt_key(&sm4_key, key);
   auto se_ret = sm4_gcm_decrypt(&sm4_key, p_iv_text, INITIALIZATION_VECTOR_SIZE, mac_text, AAD_MAC_TEXT_LEN, cipher, cipher_size, in_mac, 16, data);
-  return se_ret;
+  return stbox::stx_status::success;
   }
 
 } // namespace crypto
