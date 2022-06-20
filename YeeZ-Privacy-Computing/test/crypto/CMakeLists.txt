@@ -1,5 +1,6 @@
 add_subdirectory(enclave)
 
+include_directories(${PROJECT_SOURCE_DIR}/stbox/include/stbox/tsgx)
 add_executable(gtest_gmssl
   main.cpp
   gtest_gmssl.cpp

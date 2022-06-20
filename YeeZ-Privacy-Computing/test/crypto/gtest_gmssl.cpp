@@ -1,9 +1,9 @@
-#include "corecommon/crypto/gmssl/sm3_hash.h"
 #include "corecommon/crypto/gmssl/sm2_ecc.h"
+#include "corecommon/crypto/gmssl/sm3_hash.h"
 #include "corecommon/crypto/gmssl/sm4_aes.h"
 #include "ypc/byte.h"
+#include <gmssl/sm2.h>
 #include <gtest/gtest.h>
-
 
 TEST(test_sm3_hash, sha3_256) {
   std::string msg = "hello";
@@ -51,29 +51,31 @@ TEST(test_sm2_ecc, gen_private_key) {
   EXPECT_EQ(ret, 0);
 }
 
+void get_expected_pkey(const ypc::bytes &skey, ypc::bytes &pkey) {
+  SM2_KEY tmp;
+  sm2_key_set_private_key(&tmp, skey.data());
+  memcpy(pkey.data(), &tmp, 64);
+  for (int i = 0; i < 64; i++) {
+    printf("%02x", *(pkey.data() + i));
+  }
+  std::cout << std::endl;
+}
+
 TEST(test_sm2_ecc, generate_pkey_from_skey) {
   ypc::hex_bytes skey_hex(
       "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
-	for (int i = 0; i < 34; i++) {
-		printf("%02x", skey[i]);
-  }
-  printf("my skey\n");
   uint8_t pkey[64];
-  uint32_t ret = ypc::crypto::sm2_ecc::generate_pkey_from_skey((const uint8_t *)&skey[0], 32,
-                                                 (uint8_t *)&pkey[0], 64);
+  uint32_t ret = ypc::crypto::sm2_ecc::generate_pkey_from_skey(
+      skey.data(), skey.size(), pkey, 64);
   EXPECT_EQ(ret, 0);
-	for (int i = 0; i < 34; i++) {
-		printf("%02x", (const uint8_t)skey[i]);
-	}
-  printf("my skey after passed to the function\n");
-	for (int i = 0; i < 64; i++) {
-		printf("%02x", pkey[i]);
-	}
-  ypc::hex_bytes expect_hex(
-      "74ce7141e217c7c1d29fabc2459e408311aad0bc7417c5c159860c7ac64d9d36c900cfcb6ae534f60f9f621b29219b16d590d64888784229f7fbe5a4cad5477c"
-      );
-  EXPECT_TRUE(memcmp(pkey, expect_hex.data(), 64) == 0);
+  for (int i = 0; i < 64; i++) {
+    printf("%02x", pkey[i]);
+  }
+  std::cout << std::endl;
+  ypc::bytes expect_pkey(64);
+  get_expected_pkey(skey, expect_pkey);
+  EXPECT_TRUE(memcmp(pkey, expect_pkey.data(), 64) == 0);
 }
 
 TEST(test_sm2_ecc, get_signature_size) {
@@ -131,7 +133,7 @@ TEST(test_sm4_aes, encrypt_with_prefix) {
   uint32_t data_size = sizeof(data);
   uint32_t prefix = 0x1;
   uint32_t cipher_size = sizeof(data) + 12;
-  uint8_t cipher[cipher_size]; 
+  uint8_t cipher[cipher_size];
   uint8_t out_mac[16];
 
   uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix((const uint8_t *)&key[0], 16,
