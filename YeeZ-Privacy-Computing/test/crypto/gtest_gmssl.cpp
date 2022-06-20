@@ -86,16 +86,16 @@ TEST(test_sm2_ecc, sign) {
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   std::string data = "hello";
   uint32_t data_size = sizeof(data);
-  ypc::bytes sig(64);
+  uint8_t sig[64];
   std::cout << "start sign" << std::endl;
   uint32_t sign_ret = ypc::crypto::sm2_ecc::sign_message(skey.data(), 32,
                                                   (const uint8_t *)&data[0], data_size,
-                                                 sig.data(), 64);
+                                                 sig, 64);
   std::cout << "end sign" << std::endl;
   ypc::bytes expect_pkey(64);
   get_expected_pkey(skey, expect_pkey);
   uint32_t ret = ypc::crypto::sm2_ecc::verify_signature((const uint8_t *)&data[0], data_size,
-                                                  sig.data(), 64,
+                                                  sig, 64,
                                                   expect_pkey.data(), 64);
   EXPECT_EQ(ret, 0);
 }
@@ -107,11 +107,11 @@ TEST(test_sm2_ecc, ecdh_shared_key) {
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   ypc::bytes expect_pkey(64);
   get_expected_pkey(skey, expect_pkey);
-  ypc::bytes shared_key(64);
+  uint8_t shared_key[64];
 
   uint32_t ret = ypc::crypto::sm2_ecc::ecdh_shared_key((const uint8_t *)&skey[0], 32,
                                                 expect_pkey.data(), 64,
-                                                shared_key.data(), 64);
+                                                shared_key, 64);
   EXPECT_EQ(ret, 0);
 }
 
