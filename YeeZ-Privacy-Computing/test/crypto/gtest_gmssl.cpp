@@ -113,11 +113,11 @@ TEST(test_sm2_ecc, ecdh_shared_key) {
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   ypc::bytes expect_pkey(64);
   get_expected_pkey(skey, expect_pkey);
-  uint8_t shared_key[64];
+  uint8_t shared_key[16];
 
   uint32_t ret = ypc::crypto::sm2_ecc::ecdh_shared_key((const uint8_t *)&skey[0], 32,
                                                 expect_pkey.data(), 64,
-                                                shared_key, 64);
+                                                shared_key, 16);
   EXPECT_EQ(ret, 0);
 }
 
