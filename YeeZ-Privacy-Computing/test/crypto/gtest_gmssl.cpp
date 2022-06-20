@@ -55,14 +55,24 @@ TEST(test_sm2_ecc, generate_pkey_from_skey) {
   ypc::hex_bytes skey_hex(
       "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
+	for (int i = 0; i < 34; i++) {
+		printf("%02x", skey[i]);
+  }
+  printf("my skey\n");
   uint8_t pkey[64];
   uint32_t ret = ypc::crypto::sm2_ecc::generate_pkey_from_skey((const uint8_t *)&skey[0], 32,
                                                  (uint8_t *)&pkey[0], 64);
   EXPECT_EQ(ret, 0);
-
+	for (int i = 0; i < 34; i++) {
+		printf("%02x", (const uint8_t)skey[i]);
+	}
+  printf("my skey after passed to the function\n");
+	for (int i = 0; i < 64; i++) {
+		printf("%02x", pkey[i]);
+	}
   ypc::hex_bytes expect_hex(
-      "74ce7141e217c7c1d29fabc2459e408311aad0bc7417c5c159860c7ac64d9d36c"
-      "900cfcb6ae534f60f9f621b29219b16d590d64888784229f7fbe5a4cad5477c");
+      "74ce7141e217c7c1d29fabc2459e408311aad0bc7417c5c159860c7ac64d9d36c900cfcb6ae534f60f9f621b29219b16d590d64888784229f7fbe5a4cad5477c"
+      );
   EXPECT_TRUE(memcmp(pkey, expect_hex.data(), 64) == 0);
 }
 
