@@ -63,6 +63,13 @@ void get_expected_pkey(const ypc::bytes &skey, ypc::bytes &pkey) {
   */
 }
 
+void show_hex(uint8_t *data, size_t size) {
+  for (int i = 0; i < size; i++) {
+    printf("%02x", *(data + i));
+  }
+  std::cout << std::endl;
+}
+
 TEST(test_sm2_ecc, generate_pkey_from_skey) {
   ypc::hex_bytes skey_hex(
       "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
@@ -85,18 +92,17 @@ TEST(test_sm2_ecc, sign) {
       "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
   ypc::bytes skey = skey_hex.as<ypc::bytes>();
   std::string data = "hello";
-  uint32_t data_size = sizeof(data);
+  uint8_t hash[32];
+  uint32_t ret = ypc::crypto::sm3_hash::msg_hash((const uint8_t *)&data[0],
+                                                 data.size(), hash, 32);
+
   uint8_t sig[64];
-  std::cout << "start sign" << std::endl;
-  uint32_t sign_ret = ypc::crypto::sm2_ecc::sign_message(skey.data(), 32,
-                                                  (const uint8_t *)&data[0], data_size,
-                                                 sig, 64);
-  std::cout << "end sign" << std::endl;
+  ret = ypc::crypto::sm2_ecc::sign_message(skey.data(), skey.size(), hash, 32,
+                                           sig, 64);
   ypc::bytes expect_pkey(64);
   get_expected_pkey(skey, expect_pkey);
-  uint32_t ret = ypc::crypto::sm2_ecc::verify_signature((const uint8_t *)&data[0], data_size,
-                                                  sig, 64,
-                                                  expect_pkey.data(), 64);
+  ret = ypc::crypto::sm2_ecc::verify_signature(hash, 32, sig, 64,
+                                               expect_pkey.data(), 64);
   EXPECT_EQ(ret, 0);
 }
 

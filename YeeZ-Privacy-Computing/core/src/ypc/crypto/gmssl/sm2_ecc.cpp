@@ -12,13 +12,12 @@ namespace ypc {
 namespace crypto {
 
 uint32_t sm2_ecc::gen_private_key(uint32_t skey_size, uint8_t *skey) {
-    SM2_KEY tmp; 
-    int res = sm2_key_generate(&tmp);
-    if (res == -1)
-    {
-        return stbox::stx_status::sm2_empty_key;
+  SM2_KEY tmp;
+  int res = sm2_key_generate(&tmp);
+  if (res == -1) {
+    return stbox::stx_status::sm2_empty_key;
     }
-    
+
     memcpy(skey, tmp.private_key, skey_size);
     return stbox::stx_status::success;
 }
@@ -26,7 +25,7 @@ uint32_t sm2_ecc::gen_private_key(uint32_t skey_size, uint8_t *skey) {
 uint32_t sm2_ecc::generate_pkey_from_skey(const uint8_t *skey,
                                           uint32_t skey_size, uint8_t *pkey,
                                           uint32_t pkey_size) {
-    SM2_KEY tmp; 
+    SM2_KEY tmp;
     int res = sm2_key_set_private_key(&tmp, skey);
     if (res == -1)
     {
@@ -50,12 +49,13 @@ uint32_t sm2_ecc::sign_message(const uint8_t *skey, uint32_t skey_size,
         return stbox::stx_status::sm2_point_generate_error;
     }
 
-    size_t siglen;
-    int sign_res = sm2_sign(&key, data, sig, &siglen);
+    SM2_SIGNATURE sm2_sig;
+    int sign_res = sm2_do_sign(&key, data, &sm2_sig);
     if (sign_res == -1)
     {
         return stbox::stx_status::sm2_sign_error;
     }
+    memcpy(sig, &sm2_sig, sig_size);
 
     return stbox::stx_status::success;
 }
@@ -74,7 +74,9 @@ uint32_t sm2_ecc::verify_signature(const uint8_t *data, uint32_t data_size,
         return stbox::stx_status::sm2_empty_public_error;
     }
 
-    int verify_res = sm2_verify(&key, data, sig, (size_t)sig_size);
+    SM2_SIGNATURE sm2_sig;
+    memcpy(&sm2_sig, sig, sig_size);
+    int verify_res = sm2_do_verify(&key, data, &sm2_sig);
     if (verify_res == -1)
     {
         return stbox::stx_status::sm2_verify_error;
@@ -102,7 +104,7 @@ uint32_t sm2_ecc::ecdh_shared_key(const uint8_t *skey, uint32_t skey_size,
         LOG(ERROR) << "invalid pkey size " << pkey_size << ", expect 64";
         return stbox::stx_status::ecc_invalid_pkey_size;
     }
-    
+
     SM2_KEY key;
     int res = sm2_key_set_private_key(&key, skey);
     if (res == -1)
