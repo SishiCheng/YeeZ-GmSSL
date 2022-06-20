@@ -55,10 +55,12 @@ void get_expected_pkey(const ypc::bytes &skey, ypc::bytes &pkey) {
   SM2_KEY tmp;
   sm2_key_set_private_key(&tmp, skey.data());
   memcpy(pkey.data(), &tmp, 64);
+  /*
   for (int i = 0; i < 64; i++) {
     printf("%02x", *(pkey.data() + i));
   }
   std::cout << std::endl;
+  */
 }
 
 TEST(test_sm2_ecc, generate_pkey_from_skey) {
@@ -69,10 +71,6 @@ TEST(test_sm2_ecc, generate_pkey_from_skey) {
   uint32_t ret = ypc::crypto::sm2_ecc::generate_pkey_from_skey(
       skey.data(), skey.size(), pkey, 64);
   EXPECT_EQ(ret, 0);
-  for (int i = 0; i < 64; i++) {
-    printf("%02x", pkey[i]);
-  }
-  std::cout << std::endl;
   ypc::bytes expect_pkey(64);
   get_expected_pkey(skey, expect_pkey);
   EXPECT_TRUE(memcmp(pkey, expect_pkey.data(), 64) == 0);
@@ -94,13 +92,12 @@ TEST(test_sm2_ecc, sign) {
                                                   (const uint8_t *)&data[0], data_size,
                                                  (uint8_t *)&sig[0], 64);
   std::cout << "end sign" << std::endl;
-
-  uint8_t pkey[64];
+  ypc::bytes expect_pkey(64);
+  get_expected_pkey(skey, expect_pkey);
   uint32_t ret = ypc::crypto::sm2_ecc::verify_signature((const uint8_t *)&data[0], data_size,
                                                 (const uint8_t *)&sig[0], 64,
-                                                (uint8_t *)&pkey[0], 64);
+                                                (uint8_t *)&expect_pkey[0], 64);
   EXPECT_EQ(ret, 0);
-
 }
 
 
