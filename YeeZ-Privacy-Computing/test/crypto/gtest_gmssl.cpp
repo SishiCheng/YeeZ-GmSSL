@@ -123,16 +123,16 @@ TEST(test_sm2_ecc, ecdh_shared_key) {
 
 TEST(test_sm4_aes, get_cipher_size) {
   std::string data = "hello";
-  uint32_t data_size = sizeof(data);
+  uint32_t data_size = data.size();
   EXPECT_EQ(ypc::crypto::sm4_aes::get_cipher_size(data_size), data_size + 12);
 }
 
 TEST(test_sm4_aes, encrypt_with_prefix) {
   ypc::bytes key("k3Men*p/2.3j4abB");
   std::string data = "this|is|a|test|message";
-  uint32_t data_size = sizeof(data);
+  uint32_t data_size = data.size();
   uint32_t prefix = 0x1;
-  uint32_t cipher_size = sizeof(data) + 12;
+  uint32_t cipher_size = data_size + 12;
   uint8_t cipher[cipher_size];
   uint8_t out_mac[16];
 
@@ -150,7 +150,7 @@ TEST(test_sm4_aes, get_data_size) {
 TEST(test_sm4_aes, decrypt_with_prefix) {
   ypc::bytes key("k3Men*p/2.3j4abB");
   std::string cipher = "this|is|a|test|messageihugyufhuidr";
-  uint32_t cipher_size = sizeof(cipher);
+  uint32_t cipher_size = cipher.size();
   uint32_t prefix = 0x1;
   uint8_t data[cipher_size - 12];
   uint8_t in_mac[16];
