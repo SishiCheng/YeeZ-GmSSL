@@ -127,7 +127,7 @@ TEST(test_sm4_aes, get_cipher_size) {
   EXPECT_EQ(ypc::crypto::sm4_aes::get_cipher_size(data_size), data_size + 12);
 }
 
-TEST(test_sm4_aes, encrypt_with_prefix) {
+TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
   ypc::bytes key("k3Men*p/2.3j4abB");
   std::string data = "this|is|a|test|message";
   uint32_t data_size = data.size();
@@ -136,27 +136,19 @@ TEST(test_sm4_aes, encrypt_with_prefix) {
   uint8_t cipher[cipher_size];
   uint8_t out_mac[16];
 
-  uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix((const uint8_t *)&key[0], 16,
+  uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix(key.data(), 16,
                                                 (const uint8_t *)&data[0], data_size, prefix,
-                                                (uint8_t *)&cipher[0], cipher_size, &out_mac[0]);
+                                                cipher, cipher_size, out_mac);
+  
+  uint8_t in_mac[16];
+  ret = ypc::crypto::sm4_aes::decrypt_with_prefix(key.data(), 16,
+                                                (const uint8_t *)&cipher[0], cipher_size, prefix,
+                                                (uint8_t *)&data[0], cipher_size - 12, in_mac); 
+  
   EXPECT_EQ(ret, 0);
 }
 
 TEST(test_sm4_aes, get_data_size) {
   uint32_t cipher_size = 0x25;
   EXPECT_EQ(ypc::crypto::sm4_aes::get_data_size(cipher_size), cipher_size - 12);
-}
-
-TEST(test_sm4_aes, decrypt_with_prefix) {
-  ypc::bytes key("k3Men*p/2.3j4abB");
-  std::string cipher = "this|is|a|test|messageihugyufhuidr";
-  uint32_t cipher_size = cipher.size();
-  uint32_t prefix = 0x1;
-  uint8_t data[cipher_size - 12];
-  uint8_t in_mac[16];
-
-  uint32_t ret = ypc::crypto::sm4_aes::decrypt_with_prefix((const uint8_t *)&key[0], 16,
-                                                (const uint8_t *)&cipher[0], cipher_size, prefix,
-                                                (uint8_t *)&data[0], cipher_size - 12, &in_mac[0]);
-  EXPECT_EQ(ret, 0);
 }
