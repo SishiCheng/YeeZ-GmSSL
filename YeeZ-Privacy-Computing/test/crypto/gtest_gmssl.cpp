@@ -142,7 +142,7 @@ TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
   
   uint8_t in_mac[16];
   ret = ypc::crypto::sm4_aes::decrypt_with_prefix(key.data(), 16,
-                                                (const uint8_t *)&cipher[0], cipher_size, prefix,
+                                                cipher, cipher_size, prefix,
                                                 (uint8_t *)&data[0], cipher_size - 12, in_mac); 
   
   EXPECT_EQ(ret, 0);
