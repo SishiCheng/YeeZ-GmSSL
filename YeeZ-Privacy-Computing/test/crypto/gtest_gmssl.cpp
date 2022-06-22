@@ -103,21 +103,45 @@ TEST(test_sm2_ecc, sign) {
   get_expected_pkey(skey, expect_pkey);
   ret = ypc::crypto::sm2_ecc::verify_signature(hash, 32, sig, 64,
                                                expect_pkey.data(), 64);
+  
   EXPECT_EQ(ret, 0);
+
+   ypc::bytes false_sig =
+      ypc::hex_bytes(
+          "bcebe54da5082467e5946b9c7bce8ca64bb3025574a0e0ed4eaeec5a7099d81b9ae496e0d4d8ef1b03d2ce5abc5a64806fad321c44a3f987e899491c6782d786")
+          .as<ypc::bytes>();
+  //bcebe54da5082467e5946b9c7bce8ca64bb3025574a0e0ed4eaeec5a7099d81b9ae496e0d4d8ef1b03d2ce5abc5a64806fad321c44a3f987e899491c6782d787
+  
+  uint32_t fail_res = ypc::crypto::sm2_ecc::verify_signature(hash, 32, false_sig.data(), 64,
+                                               expect_pkey.data(), 64);
+  
+  EXPECT_EQ(fail_res, 57);
+  
 }
 
 
 TEST(test_sm2_ecc, ecdh_shared_key) {
-  ypc::hex_bytes skey_hex(
+  ypc::hex_bytes skey_hex_a(
       "4f16ab84f1d146f036332f30cc00d76c6b598c01887d88d935e728d221f4506e");
-  ypc::bytes skey = skey_hex.as<ypc::bytes>();
-  ypc::bytes expect_pkey(64);
-  get_expected_pkey(skey, expect_pkey);
-  uint8_t shared_key[16];
+  ypc::bytes skey_a = skey_hex_a.as<ypc::bytes>();
+  ypc::bytes expect_pkey_a(64);
+  get_expected_pkey(skey_a, expect_pkey_a);
+  uint8_t shared_key_a[16], shared_key_b[16];
 
-  uint32_t ret = ypc::crypto::sm2_ecc::ecdh_shared_key((const uint8_t *)&skey[0], 32,
-                                                expect_pkey.data(), 64,
-                                                shared_key, 16);
+  ypc::hex_bytes skey_hex_b(
+      "70c39e6e85f850193a623178b8bd4c798a36e62e71bb5ca106768246c2cb8baf");
+  ypc::bytes skey_b = skey_hex_b.as<ypc::bytes>();
+  ypc::bytes expect_pkey_b(64);
+  get_expected_pkey(skey_b, expect_pkey_b);
+
+  uint32_t ret = ypc::crypto::sm2_ecc::ecdh_shared_key(skey_a.data(), 32,
+                                                expect_pkey_b.data(), 64,
+                                                shared_key_a, 16);
+
+  ret = ypc::crypto::sm2_ecc::ecdh_shared_key(skey_b.data(), 32,
+                                                expect_pkey_a.data(), 64,
+                                                shared_key_b, 16);
+  EXPECT_EQ(shared_key_a, shared_key_b);                                     
   EXPECT_EQ(ret, 0);
 }
 
@@ -130,6 +154,7 @@ TEST(test_sm4_aes, get_cipher_size) {
 TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
   ypc::bytes key("k3Men*p/2.3j4abB");
   std::string data = "this|is|a|test|message";
+  std::string actual_data = "this|is|a|test|message";
   uint32_t data_size = data.size();
   uint32_t prefix = 0x1;
   uint32_t cipher_size = data_size + 12;
@@ -140,15 +165,20 @@ TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
                                                 (const uint8_t *)&data[0], data_size, prefix,
                                                 cipher, cipher_size, out_mac);
   
-  uint8_t in_mac[16];
   ret = ypc::crypto::sm4_aes::decrypt_with_prefix(key.data(), 16,
                                                 cipher, cipher_size, prefix,
-                                                (uint8_t *)&data[0], cipher_size - 12, in_mac); 
+                                                (uint8_t *)&data[0], cipher_size - 12, out_mac); 
+  EXPECT_EQ(data, actual_data);
   
   EXPECT_EQ(ret, 0);
 }
 
+
 TEST(test_sm4_aes, get_data_size) {
-  uint32_t cipher_size = 0x25;
+  ypc::bytes cipher =
+      ypc::hex_bytes(
+          "943fac246391f0653d32a92c9820e36c3e66d6672a83e2a93d18451caae0b2c1dba8")
+          .as<ypc::bytes>();
+  uint32_t cipher_size = cipher.size();
   EXPECT_EQ(ypc::crypto::sm4_aes::get_data_size(cipher_size), cipher_size - 12);
 }
