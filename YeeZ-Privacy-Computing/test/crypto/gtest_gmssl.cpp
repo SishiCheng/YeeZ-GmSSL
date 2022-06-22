@@ -1,6 +1,7 @@
 #include "corecommon/crypto/gmssl/sm2_ecc.h"
 #include "corecommon/crypto/gmssl/sm3_hash.h"
 #include "corecommon/crypto/gmssl/sm4_aes.h"
+#include "stbox/stx_status.h"
 #include "ypc/byte.h"
 #include <gmssl/sm2.h>
 #include <gtest/gtest.h>
@@ -115,8 +116,7 @@ TEST(test_sm2_ecc, sign) {
   uint32_t fail_res = ypc::crypto::sm2_ecc::verify_signature(hash, 32, false_sig.data(), 64,
                                                expect_pkey.data(), 64);
 
-  EXPECT_EQ(fail_res, 57);
-
+  EXPECT_EQ(fail_res, stbox::stx_status::sm2_get_false_sign);
 }
 
 
