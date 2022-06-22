@@ -103,7 +103,7 @@ TEST(test_sm2_ecc, sign) {
   get_expected_pkey(skey, expect_pkey);
   ret = ypc::crypto::sm2_ecc::verify_signature(hash, 32, sig, 64,
                                                expect_pkey.data(), 64);
-  
+
   EXPECT_EQ(ret, 0);
 
    ypc::bytes false_sig =
@@ -111,12 +111,12 @@ TEST(test_sm2_ecc, sign) {
           "bcebe54da5082467e5946b9c7bce8ca64bb3025574a0e0ed4eaeec5a7099d81b9ae496e0d4d8ef1b03d2ce5abc5a64806fad321c44a3f987e899491c6782d786")
           .as<ypc::bytes>();
   //bcebe54da5082467e5946b9c7bce8ca64bb3025574a0e0ed4eaeec5a7099d81b9ae496e0d4d8ef1b03d2ce5abc5a64806fad321c44a3f987e899491c6782d787
-  
+
   uint32_t fail_res = ypc::crypto::sm2_ecc::verify_signature(hash, 32, false_sig.data(), 64,
                                                expect_pkey.data(), 64);
-  
+
   EXPECT_EQ(fail_res, 57);
-  
+
 }
 
 
@@ -141,7 +141,7 @@ TEST(test_sm2_ecc, ecdh_shared_key) {
   ret = ypc::crypto::sm2_ecc::ecdh_shared_key(skey_b.data(), 32,
                                                 expect_pkey_a.data(), 64,
                                                 shared_key_b, 16);
-  EXPECT_EQ(shared_key_a, shared_key_b);                                     
+  EXPECT_TRUE(memcmp(shared_key_a, shared_key_b, 16) == 0);
   EXPECT_EQ(ret, 0);
 }
 
@@ -164,12 +164,12 @@ TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
   uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix(key.data(), 16,
                                                 (const uint8_t *)&data[0], data_size, prefix,
                                                 cipher, cipher_size, out_mac);
-  
+
   ret = ypc::crypto::sm4_aes::decrypt_with_prefix(key.data(), 16,
                                                 cipher, cipher_size, prefix,
-                                                (uint8_t *)&data[0], cipher_size - 12, out_mac); 
+                                                (uint8_t *)&data[0], cipher_size - 12, out_mac);
   EXPECT_EQ(data, actual_data);
-  
+
   EXPECT_EQ(ret, 0);
 }
 
