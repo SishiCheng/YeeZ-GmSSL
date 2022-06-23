@@ -4,6 +4,7 @@
 #include "stbox/stx_status.h"
 #include "ypc/byte.h"
 #include <gmssl/sm2.h>
+#include <gmssl/sm4.h>
 #include <gtest/gtest.h>
 
 TEST(test_sm3_hash, sha3_256) {
@@ -47,8 +48,7 @@ TEST(test_sm2_ecc, get_public_key_size) {
 
 TEST(test_sm2_ecc, gen_private_key) {
   uint8_t skey[32];
-  uint32_t ret = ypc::crypto::sm2_ecc::gen_private_key(32,
-                                                 (uint8_t *)&skey[0]);
+  uint32_t ret = ypc::crypto::sm2_ecc::gen_private_key(32, skey);
   EXPECT_EQ(ret, 0);
 }
 
@@ -154,25 +154,64 @@ TEST(test_sm4_aes, get_cipher_size) {
 TEST(test_sm4_aes, encrypt_and_decrypt_with_prefix) {
   ypc::bytes key("k3Men*p/2.3j4abB");
   std::string data = "this|is|a|test|message";
-  std::string actual_data = "this|is|a|test|message";
   uint32_t data_size = data.size();
   uint32_t prefix = 0x1;
-  uint32_t cipher_size = data_size + 12;
-  uint8_t cipher[cipher_size];
-  uint8_t out_mac[16];
+  uint32_t cipher_size = ypc::crypto::sm4_aes::get_cipher_size(data_size);
+  uint8_t cipher[cipher_size] = {0};
+  uint8_t out_mac[16] = {0};
 
-  uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix(key.data(), 16,
-                                                (const uint8_t *)&data[0], data_size, prefix,
-                                                cipher, cipher_size, out_mac);
-
-  ret = ypc::crypto::sm4_aes::decrypt_with_prefix(key.data(), 16,
-                                                cipher, cipher_size, prefix,
-                                                (uint8_t *)&data[0], cipher_size - 12, out_mac);
-  EXPECT_EQ(data, actual_data);
-
+  uint32_t ret = ypc::crypto::sm4_aes::encrypt_with_prefix(
+      key.data(), key.size(), (const uint8_t *)&data[0], data_size, prefix,
+      cipher, cipher_size, out_mac);
   EXPECT_EQ(ret, 0);
+
+  std::string decrypted_data(data.size(), '0');
+  ret = ypc::crypto::sm4_aes::decrypt_with_prefix(
+      key.data(), key.size(), cipher, cipher_size, prefix,
+      (uint8_t *)&decrypted_data[0], data_size, out_mac);
+  EXPECT_EQ(ret, 0);
+  EXPECT_EQ(data, decrypted_data);
 }
 
+TEST(test_sm4_aes, gcm_encrypt_decrypt) {
+  ypc::bytes skey(32);
+  ypc::crypto::sm2_ecc::gen_private_key(skey.size(), skey.data());
+  ypc::bytes key(skey.data(), 16);
+
+  std::string data = "this|is|a|test|message";
+  std::string msg(data.size(), '0');
+  // uint32_t cipher_size = ypc::crypto::sm4_aes::get_cipher_size(data.size());
+  // std::cout << "data size: " << data.size() << ", cipher size: " <<
+  // cipher_size
+  //<< std::endl;
+  // uint8_t cipher[cipher_size] = {0};
+  uint8_t cipher[data.size()] = {0};
+  uint8_t tag[16] = {0};
+  // encrypt
+  SM4_KEY sm4_key;
+  sm4_set_encrypt_key(&sm4_key, key.data());
+  // size_t sm4_key_size = sizeof(SM4_KEY);
+  // uint8_t encrypt_key[sm4_key_size];
+  // memcpy(encrypt_key, &sm4_key, sm4_key_size);
+  // show_hex(encrypt_key, sm4_key_size);
+  char aad[64] = {0};
+  // uint8_t *p_iv_text = cipher + data.size();
+  uint8_t p_iv_text[12] = {0};
+  int ret =
+      sm4_gcm_encrypt(&sm4_key, p_iv_text, 12, (const uint8_t *)aad, 64,
+                      (const uint8_t *)&data[0], data.size(), cipher, 16, tag);
+  std::cout << "sm4_gcm_encrypt return: " << ret << std::endl;
+
+  // decrypt
+  sm4_set_encrypt_key(&sm4_key, key.data());
+  // uint8_t decrypt_key[sm4_key_size];
+  // memcpy(decrypt_key, &sm4_key, sm4_key_size);
+  // show_hex(decrypt_key, sm4_key_size);
+  ret = sm4_gcm_decrypt(&sm4_key, p_iv_text, 12, (const uint8_t *)aad, 64,
+                        cipher, data.size(), tag, 16, (uint8_t *)&msg[0]);
+  std::cout << "sm4_gcm_decrypt return: " << ret << std::endl;
+  std::cout << "msg: " << msg << std::endl;
+}
 
 TEST(test_sm4_aes, get_data_size) {
   ypc::bytes cipher =

@@ -13,7 +13,7 @@ struct sm2_ecc {
                                           uint32_t skey_size, uint8_t *pkey,
                                           uint32_t pkey_size);
 
-  static uint32_t get_signature_size();
+  inline static uint32_t get_signature_size() { return 64; }
 
   static uint32_t sign_message(const uint8_t *skey, uint32_t skey_size,
                                const uint8_t *data, uint32_t data_size,
