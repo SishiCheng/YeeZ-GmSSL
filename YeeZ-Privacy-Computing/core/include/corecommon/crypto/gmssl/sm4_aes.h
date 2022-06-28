@@ -1,4 +1,5 @@
 #pragma once
+#include "corecommon/crypto/aes_gcm_traits.h"
 #include <cstdint>
 
 namespace ypc{
@@ -26,6 +27,9 @@ public:
                                       uint32_t cipher_size, uint32_t prefix,
                                       uint8_t *data, uint32_t data_size,
                                       const uint8_t *in_mac);
+};
+template <> struct aes_gcm_traits<sm4_aes> {
+  constexpr static bool value = true;
 };
 }
 }
